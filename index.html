@@ -10,78 +10,122 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --gold: #C9A44E;
-      --maroon: #6B1A26;
-      --cream: #F5F0E8;
-    }
-
     html, body {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       overflow: hidden;
-      background: #0a0a0a;
+      background: #000;
       font-family: 'Montserrat', sans-serif;
     }
 
-    /* ── MAGAZINE CONTAINER ── */
+    /* ═══════════════════════════════════════════
+       MAGAZINE — full-screen page flipper
+       Each page is absolutely positioned, filling
+       the entire viewport. Images use object-fit:cover
+       so they fill the frame with no black bars.
+    ═══════════════════════════════════════════ */
+
     .magazine {
       position: fixed;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    /* ── PAGES ── */
+    /* ── Individual page ── */
     .page {
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      overflow: hidden;
+      /* hidden by default */
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s ease;
-      background: #111;
+      will-change: transform, opacity;
     }
 
     .page.active {
       opacity: 1;
       pointer-events: all;
+      z-index: 2;
     }
 
-    /* Each page image fills screen maintaining aspect ratio */
+    /* ── Full-bleed image — COVERS the whole page, no black bars ── */
     .page-img {
-      max-width: 100vw;
-      max-height: 100vh;
-      width: auto;
-      height: auto;
-      object-fit: contain;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;        /* fills entire viewport */
+      object-position: center top; /* keeps the top (title/face) visible */
       display: block;
-      /* For portrait images, fill height */
-      height: 100vh;
-      width: auto;
     }
 
-    /* For landscape images, fill width instead */
-    .page-img.landscape {
-      width: 100vw;
-      height: auto;
+    /* For the dress code (landscape-ish), center it instead */
+    .page-img.fit-contain {
+      object-fit: contain;
+      background: #0d0010;
+      object-position: center center;
     }
 
-    /* ── NAV BAR ── */
+    /* Coming soon page has no image */
+    .page-coming {
+      background: #060306;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ═══════════════════════════════════════════
+       PAGE TURN ANIMATIONS
+    ═══════════════════════════════════════════ */
+
+    /* Next page: slides in from right */
+    .enter-from-right {
+      animation: enterFromRight 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    /* Prev page: slides in from left */
+    .enter-from-left {
+      animation: enterFromLeft 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    /* Exiting page: slides out to left */
+    .exit-to-left {
+      animation: exitToLeft 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    /* Exiting page: slides out to right */
+    .exit-to-right {
+      animation: exitToRight 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    @keyframes enterFromRight {
+      from { opacity: 0; transform: translateX(60px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes enterFromLeft {
+      from { opacity: 0; transform: translateX(-60px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes exitToLeft {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(-60px); }
+    }
+    @keyframes exitToRight {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(60px); }
+    }
+
+    /* ═══════════════════════════════════════════
+       TOP NAV BAR
+    ═══════════════════════════════════════════ */
+
     .nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 100;
+      z-index: 200;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 2rem;
-      height: 52px;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(12px);
+      padding: 0 1.5rem;
+      height: 50px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(201,164,78,0.2);
     }
 
@@ -90,366 +134,339 @@
       flex-direction: column;
       line-height: 1.1;
     }
-
-    .nav-brand-title {
+    .nav-title {
       font-family: 'Playfair Display', serif;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 0.15em;
-      color: var(--gold);
+      color: #C9A44E;
     }
-
-    .nav-brand-sub {
-      font-size: 0.45rem;
+    .nav-sub {
+      font-size: 0.42rem;
       letter-spacing: 0.25em;
-      color: rgba(201,164,78,0.5);
       text-transform: uppercase;
+      color: rgba(201,164,78,0.45);
     }
 
-    .nav-pages {
+    /* Nav dots */
+    .nav-dots {
       display: flex;
-      gap: 0.3rem;
+      gap: 6px;
       align-items: center;
     }
-
-    .nav-dot {
-      width: 7px;
-      height: 7px;
+    .dot {
+      width: 8px; height: 8px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(201,164,78,0.3);
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(201,164,78,0.25);
       cursor: pointer;
-      transition: all 0.3s;
+      transition: background 0.25s, transform 0.25s, border-color 0.25s;
+    }
+    .dot.active {
+      background: #C9A44E;
+      border-color: #C9A44E;
+      transform: scale(1.35);
+    }
+    .dot:hover:not(.active) {
+      background: rgba(201,164,78,0.4);
     }
 
-    .nav-dot.active {
-      background: var(--gold);
-      border-color: var(--gold);
-      transform: scale(1.3);
-    }
-
+    /* Page counter */
     .nav-counter {
       font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      color: rgba(201,164,78,0.6);
-      margin-left: 0.8rem;
+      letter-spacing: 0.12em;
+      color: rgba(201,164,78,0.55);
+      min-width: 36px;
+      text-align: right;
     }
 
-    /* ── ARROW NAVIGATION ── */
+    /* ═══════════════════════════════════════════
+       LEFT / RIGHT ARROW BUTTONS
+    ═══════════════════════════════════════════ */
+
     .arrow {
       position: fixed;
       top: 50%;
       transform: translateY(-50%);
-      z-index: 100;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.5);
-      border: 1px solid rgba(201,164,78,0.3);
+      z-index: 200;
+      width: 44px; height: 44px;
       border-radius: 50%;
+      border: 1px solid rgba(201,164,78,0.35);
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #C9A44E;
+      font-size: 1rem;
       cursor: pointer;
-      color: var(--gold);
-      font-size: 1.1rem;
-      transition: all 0.3s;
-      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.25s;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
-
     .arrow:hover {
       background: rgba(201,164,78,0.2);
-      border-color: var(--gold);
+      border-color: #C9A44E;
       transform: translateY(-50%) scale(1.1);
     }
+    .arrow.hidden { opacity: 0; pointer-events: none; }
+    .arrow-prev { left: 14px; }
+    .arrow-next { right: 14px; }
 
-    .arrow.disabled {
-      opacity: 0.2;
-      cursor: default;
+    /* ═══════════════════════════════════════════
+       BOTTOM PAGE LABEL
+    ═══════════════════════════════════════════ */
+
+    .page-label {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      font-size: 0.5rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      white-space: nowrap;
       pointer-events: none;
     }
 
-    .arrow-prev { left: 1rem; }
-    .arrow-next { right: 1rem; }
+    /* ═══════════════════════════════════════════
+       COMING SOON CONTENT
+    ═══════════════════════════════════════════ */
 
-    /* ── PAGE LABEL (bottom) ── */
-    .page-label {
-      position: fixed;
-      bottom: 1.2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
-      font-size: 0.55rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-      background: rgba(0,0,0,0.5);
-      padding: 0.35rem 1rem;
-      border-radius: 20px;
-      backdrop-filter: blur(8px);
-      white-space: nowrap;
-      transition: opacity 0.5s;
-    }
-
-    /* ── COMING SOON PAGE ── */
-    .page-coming {
-      flex-direction: column;
-      gap: 1.5rem;
+    .coming-inner {
       text-align: center;
       padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
     }
-
     .coming-rule {
-      width: 200px;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      width: 180px; height: 1px;
+      background: linear-gradient(to right, transparent, #C9A44E, transparent);
     }
-
     .coming-title {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(1.5rem, 4vw, 2.5rem);
-      color: var(--gold);
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      color: #C9A44E;
       font-weight: 400;
     }
-
     .coming-sub {
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      color: rgba(201,164,78,0.5);
-      max-width: 400px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: rgba(201,164,78,0.45);
+      max-width: 380px;
+      line-height: 1.6;
     }
-
     .coming-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
+      gap: 0.5rem;
       justify-content: center;
     }
-
     .coming-tag {
-      font-size: 0.55rem;
+      font-size: 0.52rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: rgba(201,164,78,0.5);
-      border: 1px solid rgba(201,164,78,0.2);
-      padding: 0.35rem 0.8rem;
+      color: rgba(201,164,78,0.45);
+      border: 1px solid rgba(201,164,78,0.18);
+      padding: 0.3rem 0.75rem;
       border-radius: 2px;
     }
 
-    /* ── SWIPE HINT ── */
+    /* mobile hint */
     .swipe-hint {
       position: fixed;
-      bottom: 3.5rem;
+      bottom: 42px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 100;
-      font-size: 0.5rem;
+      font-size: 0.45rem;
       letter-spacing: 0.2em;
-      color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.18);
+      pointer-events: none;
       display: none;
     }
-
     @media (max-width: 600px) {
       .swipe-hint { display: block; }
-      .arrow { width: 36px; height: 36px; font-size: 0.9rem; }
-      .arrow-prev { left: 0.4rem; }
-      .arrow-next { right: 0.4rem; }
-    }
-
-    /* Page flip transition */
-    .page.slide-out-left {
-      animation: slideOutLeft 0.4s ease forwards;
-    }
-    .page.slide-in-right {
-      animation: slideInRight 0.4s ease forwards;
-    }
-    .page.slide-out-right {
-      animation: slideOutRight 0.4s ease forwards;
-    }
-    .page.slide-in-left {
-      animation: slideInLeft 0.4s ease forwards;
-    }
-
-    @keyframes slideOutLeft {
-      from { opacity: 1; transform: translateX(0); }
-      to   { opacity: 0; transform: translateX(-40px); }
-    }
-    @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(40px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes slideOutRight {
-      from { opacity: 1; transform: translateX(0); }
-      to   { opacity: 0; transform: translateX(40px); }
-    }
-    @keyframes slideInLeft {
-      from { opacity: 0; transform: translateX(-40px); }
-      to   { opacity: 1; transform: translateX(0); }
+      .arrow { width: 36px; height: 36px; font-size: 0.85rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── NAV ── -->
+  <!-- ══ TOP NAV ══ -->
   <nav class="nav">
     <div class="nav-brand">
-      <span class="nav-brand-title">THE SIDEBAR</span>
-      <span class="nav-brand-sub">Law Week Edition 2026</span>
+      <span class="nav-title">THE SIDEBAR</span>
+      <span class="nav-sub">Law Week Edition 2026</span>
     </div>
-    <div class="nav-pages" id="nav-dots"></div>
-    <span class="nav-counter" id="nav-counter">1 / 5</span>
+    <div class="nav-dots" id="dots"></div>
+    <span class="nav-counter" id="counter">1 / 5</span>
   </nav>
 
-  <!-- ── PREV / NEXT ARROWS ── -->
-  <button class="arrow arrow-prev" id="btn-prev" aria-label="Previous page">&#8592;</button>
+  <!-- ══ PREV / NEXT ══ -->
+  <button class="arrow arrow-prev hidden" id="btn-prev" aria-label="Previous page">&#8592;</button>
   <button class="arrow arrow-next" id="btn-next" aria-label="Next page">&#8594;</button>
 
-  <!-- ── MAGAZINE ── -->
+  <!-- ══ MAGAZINE ══ -->
   <main class="magazine" id="magazine">
 
-    <!-- PAGE 1: COVER -->
-    <div class="page active" id="page-0" data-label="Cover">
-      <img class="page-img" src="assets/images/cover.jpg.jpeg" alt="The Sidebar — Law Week Edition 2026 Cover" />
+    <!-- PAGE 1 — COVER (portrait, fill with cover) -->
+    <div class="page active" id="p0" data-label="Cover">
+      <img class="page-img" src="assets/images/cover.jpg.jpeg"
+           alt="The Sidebar — Law Week Edition 2026 Cover" />
     </div>
 
-    <!-- PAGE 2: EDITOR'S NOTE -->
-    <div class="page" id="page-1" data-label="Editor's Note — Page 01">
-      <img class="page-img" src="assets/images/editor.jpg.png" alt="Editor's Note — Tony Tamaradoubra" />
+    <!-- PAGE 2 — EDITOR'S NOTE (portrait page scan) -->
+    <div class="page" id="p1" data-label="Editor's Note · Page 01">
+      <img class="page-img" src="assets/images/editor.jpg.png"
+           alt="Editor-in-Chief · Tony Tamaradoubra" />
     </div>
 
-    <!-- PAGE 3: PRESIDENT'S REMARKS -->
-    <div class="page" id="page-2" data-label="President's Opening Remarks — Page 02">
-      <img class="page-img" src="assets/images/president.jpg.png" alt="President's Opening Remarks — Tokoni Azorbo" />
+    <!-- PAGE 3 — PRESIDENT'S REMARKS (portrait page scan) -->
+    <div class="page" id="p2" data-label="President's Opening Remarks · Page 02">
+      <img class="page-img" src="assets/images/president.jpg.png"
+           alt="President's Remarks · Tokoni Azorbo" />
     </div>
 
-    <!-- PAGE 4: DRESS CODE / ITINERARY -->
-    <div class="page" id="page-3" data-label="Law Week Dress Code — 12th–17th October">
-      <img class="page-img" src="assets/images/dresscode.jpg.jpeg" alt="Law Week 2026 Dress Code" />
+    <!-- PAGE 4 — DRESS CODE (square/landscape — use contain so nothing is cut) -->
+    <div class="page" id="p3" data-label="Law Week Dress Code · 12th–17th October">
+      <img class="page-img fit-contain" src="assets/images/dresscode.jpg.jpeg"
+           alt="Law Week 2026 Dress Code" />
     </div>
 
-    <!-- PAGE 5: MORE COMING SOON -->
-    <div class="page page-coming" id="page-4" data-label="End of Current Edition">
-      <div class="coming-rule"></div>
-      <h2 class="coming-title">More Pages Coming Soon</h2>
-      <p class="coming-sub">Upload your next images to continue building <em>The Sidebar</em></p>
-      <div class="coming-tags">
-        <span class="coming-tag">Executive Council</span>
-        <span class="coming-tag">Night of Honour</span>
-        <span class="coming-tag">Gallery</span>
-        <span class="coming-tag">Feature Articles</span>
-        <span class="coming-tag">Spotlights</span>
+    <!-- PAGE 5 — COMING SOON -->
+    <div class="page page-coming" id="p4" data-label="More pages coming soon…">
+      <div class="coming-inner">
+        <div class="coming-rule"></div>
+        <h2 class="coming-title">More Pages Coming Soon</h2>
+        <p class="coming-sub">Upload your next images to continue building <em>The Sidebar</em></p>
+        <div class="coming-tags">
+          <span class="coming-tag">Executive Council</span>
+          <span class="coming-tag">Night of Honour</span>
+          <span class="coming-tag">Gallery</span>
+          <span class="coming-tag">Feature Articles</span>
+          <span class="coming-tag">Spotlights</span>
+        </div>
+        <div class="coming-rule"></div>
       </div>
-      <div class="coming-rule"></div>
     </div>
 
   </main>
 
-  <!-- ── PAGE LABEL ── -->
-  <div class="page-label" id="page-label">Cover</div>
-  <div class="swipe-hint">← SWIPE TO TURN PAGE →</div>
+  <!-- ══ BOTTOM LABEL ══ -->
+  <div class="page-label" id="label">Cover</div>
+  <div class="swipe-hint">← SWIPE →</div>
 
   <script>
-    const pages = document.querySelectorAll('.page');
-    const total = pages.length;
-    let current = 0;
-    let animating = false;
+    (() => {
+      const pages   = [...document.querySelectorAll('.page')];
+      const total   = pages.length;
+      const dots    = document.getElementById('dots');
+      const counter = document.getElementById('counter');
+      const label   = document.getElementById('label');
+      const btnPrev = document.getElementById('btn-prev');
+      const btnNext = document.getElementById('btn-next');
 
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-    const counter = document.getElementById('nav-counter');
-    const label   = document.getElementById('page-label');
-    const dotsContainer = document.getElementById('nav-dots');
+      let cur = 0;
+      let busy = false;
 
-    // Build nav dots
-    pages.forEach((_, i) => {
-      const dot = document.createElement('div');
-      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-      dot.addEventListener('click', () => goTo(i));
-      dotsContainer.appendChild(dot);
-    });
+      /* ── Build nav dots ── */
+      pages.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => goTo(i));
+        dots.appendChild(d);
+      });
 
-    function getDots() {
-      return dotsContainer.querySelectorAll('.nav-dot');
-    }
+      function allDots() { return [...dots.querySelectorAll('.dot')]; }
 
-    function updateUI() {
-      counter.textContent = `${current + 1} / ${total}`;
-      label.textContent = pages[current].dataset.label || '';
+      /* ── Update chrome ── */
+      function updateChrome() {
+        counter.textContent = `${cur + 1} / ${total}`;
+        label.textContent   = pages[cur].dataset.label || '';
+        allDots().forEach((d, i) => d.classList.toggle('active', i === cur));
+        btnPrev.classList.toggle('hidden', cur === 0);
+        btnNext.classList.toggle('hidden', cur === total - 1);
+      }
 
-      getDots().forEach((d, i) => d.classList.toggle('active', i === current));
+      /* ── Go to page ── */
+      function goTo(next) {
+        if (busy || next === cur || next < 0 || next >= total) return;
+        busy = true;
 
-      btnPrev.classList.toggle('disabled', current === 0);
-      btnNext.classList.toggle('disabled', current === total - 1);
-    }
+        const forward   = next > cur;
+        const outAnim   = forward ? 'exit-to-left'    : 'exit-to-right';
+        const inAnim    = forward ? 'enter-from-right' : 'enter-from-left';
+        const outPage   = pages[cur];
+        const inPage    = pages[next];
 
-    function goTo(next, direction = null) {
-      if (animating || next === current) return;
-      if (next < 0 || next >= total) return;
+        /* Show incoming page behind outgoing */
+        inPage.style.opacity = '1';
+        inPage.style.zIndex  = '1';
+        inPage.classList.remove('active');
 
-      animating = true;
-      const dir = direction ?? (next > current ? 'forward' : 'back');
-      const outClass = dir === 'forward' ? 'slide-out-left' : 'slide-out-right';
-      const inClass  = dir === 'forward' ? 'slide-in-right' : 'slide-in-left';
+        /* Animate outgoing */
+        outPage.classList.add(outAnim);
 
-      const outPage = pages[current];
-      const inPage  = pages[next];
+        /* Animate incoming */
+        inPage.classList.add(inAnim);
 
-      // Start exit animation on current
-      outPage.classList.add(outClass);
-
-      // After exit, switch pages
-      setTimeout(() => {
-        outPage.classList.remove('active', outClass);
-        outPage.style.opacity = '';
-        outPage.style.transform = '';
-
-        inPage.classList.add('active', inClass);
+        const DURATION = 460;
 
         setTimeout(() => {
-          inPage.classList.remove(inClass);
+          /* Clean up outgoing */
+          outPage.classList.remove('active', outAnim);
+          outPage.style.opacity = '';
+          outPage.style.zIndex  = '';
+
+          /* Clean up incoming */
+          inPage.classList.remove(inAnim);
+          inPage.classList.add('active');
           inPage.style.opacity = '';
-          inPage.style.transform = '';
-          animating = false;
-        }, 420);
+          inPage.style.zIndex  = '';
 
-        current = next;
-        updateUI();
-      }, 380);
-    }
-
-    function next() { goTo(current + 1, 'forward'); }
-    function prev() { goTo(current - 1, 'back'); }
-
-    btnNext.addEventListener('click', next);
-    btnPrev.addEventListener('click', prev);
-
-    // Keyboard navigation
-    document.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') next();
-      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'   || e.key === 'PageUp')   prev();
-    });
-
-    // Touch/swipe support
-    let touchStartX = 0;
-    document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    document.addEventListener('touchend', e => {
-      const diff = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 50) {
-        diff > 0 ? next() : prev();
+          cur = next;
+          updateChrome();
+          busy = false;
+        }, DURATION);
       }
-    }, { passive: true });
 
-    // Mouse wheel
-    let wheelLock = false;
-    document.addEventListener('wheel', e => {
-      if (wheelLock) return;
-      wheelLock = true;
-      e.deltaY > 0 ? next() : prev();
-      setTimeout(() => { wheelLock = false; }, 800);
-    }, { passive: true });
+      /* ── Controls ── */
+      btnNext.addEventListener('click', () => goTo(cur + 1));
+      btnPrev.addEventListener('click', () => goTo(cur - 1));
 
-    // Init
-    updateUI();
+      /* Keyboard */
+      document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown'  || e.key === 'PageDown') goTo(cur + 1);
+        if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'    || e.key === 'PageUp')   goTo(cur - 1);
+      });
+
+      /* Touch swipe */
+      let tx = 0;
+      document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      document.addEventListener('touchend', e => {
+        const dx = tx - e.changedTouches[0].clientX;
+        if (Math.abs(dx) > 45) dx > 0 ? goTo(cur + 1) : goTo(cur - 1);
+      }, { passive: true });
+
+      /* Mouse wheel — one page per flick */
+      let wheelCool = false;
+      document.addEventListener('wheel', e => {
+        if (wheelCool) return;
+        wheelCool = true;
+        e.deltaY > 0 ? goTo(cur + 1) : goTo(cur - 1);
+        setTimeout(() => { wheelCool = false; }, 750);
+      }, { passive: true });
+
+      updateChrome();
+    })();
   </script>
 </body>
 </html>
