@@ -6,211 +6,450 @@
   <title>The Sidebar — Law Week Edition 2026 | LAWSAN NDU</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/magazine.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9A44E;
+      --maroon: #6B1A26;
+      --cream: #F5F0E8;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0a;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* ── MAGAZINE CONTAINER ── */
+    .magazine {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── PAGES ── */
+    .page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      background: #111;
+    }
+
+    .page.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Each page image fills screen maintaining aspect ratio */
+    .page-img {
+      max-width: 100vw;
+      max-height: 100vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      /* For portrait images, fill height */
+      height: 100vh;
+      width: auto;
+    }
+
+    /* For landscape images, fill width instead */
+    .page-img.landscape {
+      width: 100vw;
+      height: auto;
+    }
+
+    /* ── NAV BAR ── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 52px;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,164,78,0.2);
+    }
+
+    .nav-brand {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .nav-brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+    }
+
+    .nav-brand-sub {
+      font-size: 0.45rem;
+      letter-spacing: 0.25em;
+      color: rgba(201,164,78,0.5);
+      text-transform: uppercase;
+    }
+
+    .nav-pages {
+      display: flex;
+      gap: 0.3rem;
+      align-items: center;
+    }
+
+    .nav-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(201,164,78,0.3);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .nav-dot.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      transform: scale(1.3);
+    }
+
+    .nav-counter {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: rgba(201,164,78,0.6);
+      margin-left: 0.8rem;
+    }
+
+    /* ── ARROW NAVIGATION ── */
+    .arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(201,164,78,0.3);
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--gold);
+      font-size: 1.1rem;
+      transition: all 0.3s;
+      backdrop-filter: blur(8px);
+      user-select: none;
+    }
+
+    .arrow:hover {
+      background: rgba(201,164,78,0.2);
+      border-color: var(--gold);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .arrow.disabled {
+      opacity: 0.2;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .arrow-prev { left: 1rem; }
+    .arrow-next { right: 1rem; }
+
+    /* ── PAGE LABEL (bottom) ── */
+    .page-label {
+      position: fixed;
+      bottom: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      font-size: 0.55rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.5);
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+      transition: opacity 0.5s;
+    }
+
+    /* ── COMING SOON PAGE ── */
+    .page-coming {
+      flex-direction: column;
+      gap: 1.5rem;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .coming-rule {
+      width: 200px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+
+    .coming-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .coming-sub {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: rgba(201,164,78,0.5);
+      max-width: 400px;
+    }
+
+    .coming-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+    }
+
+    .coming-tag {
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(201,164,78,0.5);
+      border: 1px solid rgba(201,164,78,0.2);
+      padding: 0.35rem 0.8rem;
+      border-radius: 2px;
+    }
+
+    /* ── SWIPE HINT ── */
+    .swipe-hint {
+      position: fixed;
+      bottom: 3.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      font-size: 0.5rem;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.25);
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .swipe-hint { display: block; }
+      .arrow { width: 36px; height: 36px; font-size: 0.9rem; }
+      .arrow-prev { left: 0.4rem; }
+      .arrow-next { right: 0.4rem; }
+    }
+
+    /* Page flip transition */
+    .page.slide-out-left {
+      animation: slideOutLeft 0.4s ease forwards;
+    }
+    .page.slide-in-right {
+      animation: slideInRight 0.4s ease forwards;
+    }
+    .page.slide-out-right {
+      animation: slideOutRight 0.4s ease forwards;
+    }
+    .page.slide-in-left {
+      animation: slideInLeft 0.4s ease forwards;
+    }
+
+    @keyframes slideOutLeft {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(-40px); }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideOutRight {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(40px); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ====== NAVIGATION ====== -->
-  <nav class="mag-nav" id="mag-nav">
+  <!-- ── NAV ── -->
+  <nav class="nav">
     <div class="nav-brand">
-      <span class="nav-title">THE SIDEBAR</span>
-      <span class="nav-edition">LAW WEEK 2026</span>
+      <span class="nav-brand-title">THE SIDEBAR</span>
+      <span class="nav-brand-sub">Law Week Edition 2026</span>
     </div>
-    <div class="nav-pages">
-      <a href="#cover" class="nav-link active" data-page="0">Cover</a>
-      <a href="#editor" class="nav-link" data-page="1">Editor's Note</a>
-      <a href="#president" class="nav-link" data-page="2">President's Remarks</a>
-      <a href="#itinerary" class="nav-link" data-page="3">Itinerary</a>
-    </div>
-    <div class="nav-toggle" id="nav-toggle">☰</div>
+    <div class="nav-pages" id="nav-dots"></div>
+    <span class="nav-counter" id="nav-counter">1 / 5</span>
   </nav>
 
-  <!-- ====== MAGAZINE WRAPPER ====== -->
-  <main class="magazine-wrapper">
+  <!-- ── PREV / NEXT ARROWS ── -->
+  <button class="arrow arrow-prev" id="btn-prev" aria-label="Previous page">&#8592;</button>
+  <button class="arrow arrow-next" id="btn-next" aria-label="Next page">&#8594;</button>
 
-    <!-- ══════════════════════════════════════════
-         PAGE 1 — COVER
-    ══════════════════════════════════════════ -->
-    <section class="page page--cover" id="cover">
-      <div class="cover-bg">
-        <img src="assets/images/cover.jpg.jpeg" alt="Cover — Chief Somina Johnbull SAN" />
-        <div class="cover-bg-overlay"></div>
+  <!-- ── MAGAZINE ── -->
+  <main class="magazine" id="magazine">
+
+    <!-- PAGE 1: COVER -->
+    <div class="page active" id="page-0" data-label="Cover">
+      <img class="page-img" src="assets/images/cover.jpg.jpeg" alt="The Sidebar — Law Week Edition 2026 Cover" />
+    </div>
+
+    <!-- PAGE 2: EDITOR'S NOTE -->
+    <div class="page" id="page-1" data-label="Editor's Note — Page 01">
+      <img class="page-img" src="assets/images/editor.jpg.png" alt="Editor's Note — Tony Tamaradoubra" />
+    </div>
+
+    <!-- PAGE 3: PRESIDENT'S REMARKS -->
+    <div class="page" id="page-2" data-label="President's Opening Remarks — Page 02">
+      <img class="page-img" src="assets/images/president.jpg.png" alt="President's Opening Remarks — Tokoni Azorbo" />
+    </div>
+
+    <!-- PAGE 4: DRESS CODE / ITINERARY -->
+    <div class="page" id="page-3" data-label="Law Week Dress Code — 12th–17th October">
+      <img class="page-img" src="assets/images/dresscode.jpg.jpeg" alt="Law Week 2026 Dress Code" />
+    </div>
+
+    <!-- PAGE 5: MORE COMING SOON -->
+    <div class="page page-coming" id="page-4" data-label="End of Current Edition">
+      <div class="coming-rule"></div>
+      <h2 class="coming-title">More Pages Coming Soon</h2>
+      <p class="coming-sub">Upload your next images to continue building <em>The Sidebar</em></p>
+      <div class="coming-tags">
+        <span class="coming-tag">Executive Council</span>
+        <span class="coming-tag">Night of Honour</span>
+        <span class="coming-tag">Gallery</span>
+        <span class="coming-tag">Feature Articles</span>
+        <span class="coming-tag">Spotlights</span>
       </div>
-
-      <div class="cover-corner cover-corner--tl"></div>
-      <div class="cover-corner cover-corner--tr"></div>
-      <div class="cover-corner cover-corner--bl"></div>
-      <div class="cover-corner cover-corner--br"></div>
-
-      <a href="#editor" class="cover-scroll-cta">
-        <span>OPEN MAGAZINE</span>
-        <span class="scroll-arrow">↓</span>
-      </a>
-    </section>
-
-    <!-- ══════════════════════════════════════════
-         PAGE 2 — EDITOR'S NOTE
-    ══════════════════════════════════════════ -->
-    <section class="page page--editorial" id="editor">
-      <div class="editorial-layout">
-
-        <!-- Header bar -->
-        <div class="page-header">
-          <div class="header-left">
-            <span class="masthead-name">THE SIDEBAR</span>
-            <span class="masthead-divider">|</span>
-            <span class="masthead-edition">LAW WEEK EDITION</span>
-          </div>
-          <div class="header-right">
-            <span>NIGER DELTA UNIVERSITY / FACULTY OF LAW</span>
-          </div>
-        </div>
-
-        <div class="section-label">A NOTE FROM THE EDITORIAL DESK</div>
-
-        <div class="editorial-body">
-          <!-- Left column -->
-          <div class="editorial-left">
-            <div class="editorial-heading">
-              <h2>The Editor-in-<br /><em class="heading-italic">Chief</em></h2>
-              <div class="heading-rule"></div>
-            </div>
-
-            <div class="editorial-text two-col-text">
-              <p>
-                <span class="drop-cap">T</span>here is something special about looking back at a period of time and realising just how much has happened. The people we have met, the experiences we have shared, the arguments we have had, the lessons we have learnt and the memories we have made all become part of a story worth telling.
-              </p>
-              <p>That is what inspired this edition of <em>The Sidebar.</em></p>
-              <p>A faculty is more than its lecture halls, courtrooms, examination results and academic achievements. It is also the people who give it life, the friendships formed along the way, the ideas exchanged, the talents discovered and the little moments that make the experience worthwhile. We wanted to create something that captures all of this.</p>
-              <p>This edition is particularly special because it gives us an opportunity to document a chapter in the history of our association. Beyond the celebrations and activities of Law Week, these pages provide an opportunity to reflect on the work, initiatives and milestones of the LAWSAN government during the session. It is also a space to recognise the individuals whose contributions, in different ways, have shaped our collective experience.</p>
-              <p>We have also made room for the lighter side of law school. After all, between lectures, cases, assignments and examinations, there are stories that deserve to be told, experiences that deserve a laugh and memories that deserve a place in print.</p>
-              <p>Putting this publication together has been an exercise in commitment, collaboration and creativity. To everyone who contributed an article, shared a photograph, offered an idea or supported the work behind the scenes, thank you. To the editorial team, whose patience and hard work have brought these pages together, I am deeply grateful.</p>
-              <p>My hope is that you find something in this edition that makes you think, something that makes you smile and something that reminds you of what it means to be part of this community.</p>
-              <p>Happy reading, and happy Law Week!</p>
-            </div>
-          </div>
-
-          <!-- Right column / sidebar -->
-          <div class="editorial-right">
-            <div class="editor-card">
-              <div class="editor-photo-frame">
-                <img src="assets/images/editor.jpg.png" alt="Tony Tamaradoubra — Editor-in-Chief" />
-              </div>
-              <div class="editor-info">
-                <h3 class="editor-name">Tony Tamaradoubra</h3>
-                <p class="editor-role">EDITOR-IN-CHIEF</p>
-                <div class="editor-divider"></div>
-                <p class="editor-pub"><em>The Sidebar</em></p>
-                <p class="editor-pub-info">LAW WEEK EDITION / 2026</p>
-              </div>
-
-              <div class="editor-pull-quote">
-                <p><em>A story worth<br />telling.</em></p>
-                <div class="pq-rule"></div>
-                <span class="pq-label">EDITORIAL</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="page-footer">
-          <span>THE SIDEBAR / LAW WEEK 2026</span>
-          <span class="page-num">01</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════
-         PAGE 3 — PRESIDENT'S OPENING REMARKS
-    ══════════════════════════════════════════ -->
-    <section class="page page--president" id="president">
-      <div class="president-layout">
-
-        <div class="page-header">
-          <div class="header-left">
-            <span class="masthead-name">THE SIDEBAR</span>
-            <span class="masthead-divider">|</span>
-            <span class="masthead-edition">LAW WEEK EDITION</span>
-          </div>
-          <div class="header-right">
-            <span>NIGER DELTA UNIVERSITY / FACULTY OF LAW</span>
-          </div>
-        </div>
-
-        <div class="section-label">A MESSAGE FROM THE PRESIDENT</div>
-
-        <div class="president-heading-block">
-          <h2 class="president-heading">OPENING</h2>
-          <p class="president-heading-italic"><em>Remarks</em></p>
-        </div>
-
-        <div class="president-portrait-block">
-          <div class="president-photo-frame">
-            <img src="assets/images/president.jpg.png" alt="Tokoni Azorbo — President LAWSAN NDU" />
-          </div>
-          <p class="president-name">Tokoni Azorbo</p>
-          <p class="president-role">PRESIDENT / LAWSAN NDU</p>
-        </div>
-
-        <div class="president-rule"></div>
-
-        <div class="president-body two-col-text">
-          <p>
-            <span class="drop-cap">I</span>t is a privilege to welcome you to this special edition of <em>The Sidebar,</em> published in commemoration of our Law Week celebrations.
-          </p>
-          <p>Law Week is always an opportunity to come together, celebrate our identity as members of the legal community and reflect on the values that brought us into this profession. It is also a moment to appreciate the people, ideas and efforts that continue to shape our association.</p>
-          <p>As an administration, our time in office has been a journey of responsibility, learning, service and collective effort. Leadership in a student association is not without its demands, but it presents a valuable opportunity to contribute to something beyond oneself. Throughout this session, we have sought to serve the interests of our members, create meaningful experiences and contribute our part to the continued growth of LAWSAN NDU.</p>
-          <p>This publication provides an opportunity to look back at some of those efforts, document our activities and recognise the contributions of members of the Executive Council and the wider association. It is equally important that we acknowledge that the progress of any administration is never the work of its leadership alone. It depends on the cooperation, participation and goodwill of the people it serves.</p>
-          <p>I am particularly pleased that this edition also honours Chief Somina Johnbull, SAN, whose professional journey and accomplishments represent an inspiring example to aspiring members of the Bar. His recognition reminds us of the heights that dedication, discipline and commitment to the legal profession can attain.</p>
-          <p>I commend the Editorial Committee for taking on the task of preserving these moments and giving members a publication they can look back on with pride. I encourage every reader to engage with the stories, appreciate the contributions documented here and, above all, enjoy the experience.</p>
-          <p>As we celebrate this year's Law Week, may we continue to uphold the ideals of unity, excellence, service and professional integrity that define our association.</p>
-          <p>Thank you for being part of our story.</p>
-        </div>
-
-        <div class="president-signature">
-          <p class="sig-name"><em>Tokoni Azorbo</em></p>
-          <p class="sig-role">PRESIDENT, LAWSAN NDU</p>
-        </div>
-
-        <div class="page-footer">
-          <span>THE SIDEBAR / LAW WEEK 2026</span>
-          <span class="page-num">02</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════
-         PAGE 4 — DRESS CODE / ITINERARY
-    ══════════════════════════════════════════ -->
-    <section class="page page--itinerary" id="itinerary">
-      <!-- Full bleed itinerary image -->
-      <div class="itinerary-full-image">
-        <img src="assets/images/dresscode.jpg.jpeg" alt="Law Week 2026 Dress Code" />
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════
-         PLACEHOLDER — MORE PAGES COMING
-    ══════════════════════════════════════════ -->
-    <section class="page page--coming-soon" id="more">
-      <div class="coming-layout">
-        <div class="coming-rule"></div>
-        <h2 class="coming-title">More Pages Coming Soon</h2>
-        <p class="coming-sub">Upload your next images to continue building <em>The Sidebar</em></p>
-        <div class="coming-tags">
-          <span class="coming-tag">Executive Council</span>
-          <span class="coming-tag">Night of Honour</span>
-          <span class="coming-tag">Gallery</span>
-          <span class="coming-tag">Feature Articles</span>
-          <span class="coming-tag">Spotlights</span>
-        </div>
-        <div class="coming-rule"></div>
-      </div>
-    </section>
+      <div class="coming-rule"></div>
+    </div>
 
   </main>
 
-  <script src="assets/js/magazine.js"></script>
+  <!-- ── PAGE LABEL ── -->
+  <div class="page-label" id="page-label">Cover</div>
+  <div class="swipe-hint">← SWIPE TO TURN PAGE →</div>
+
+  <script>
+    const pages = document.querySelectorAll('.page');
+    const total = pages.length;
+    let current = 0;
+    let animating = false;
+
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const counter = document.getElementById('nav-counter');
+    const label   = document.getElementById('page-label');
+    const dotsContainer = document.getElementById('nav-dots');
+
+    // Build nav dots
+    pages.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    });
+
+    function getDots() {
+      return dotsContainer.querySelectorAll('.nav-dot');
+    }
+
+    function updateUI() {
+      counter.textContent = `${current + 1} / ${total}`;
+      label.textContent = pages[current].dataset.label || '';
+
+      getDots().forEach((d, i) => d.classList.toggle('active', i === current));
+
+      btnPrev.classList.toggle('disabled', current === 0);
+      btnNext.classList.toggle('disabled', current === total - 1);
+    }
+
+    function goTo(next, direction = null) {
+      if (animating || next === current) return;
+      if (next < 0 || next >= total) return;
+
+      animating = true;
+      const dir = direction ?? (next > current ? 'forward' : 'back');
+      const outClass = dir === 'forward' ? 'slide-out-left' : 'slide-out-right';
+      const inClass  = dir === 'forward' ? 'slide-in-right' : 'slide-in-left';
+
+      const outPage = pages[current];
+      const inPage  = pages[next];
+
+      // Start exit animation on current
+      outPage.classList.add(outClass);
+
+      // After exit, switch pages
+      setTimeout(() => {
+        outPage.classList.remove('active', outClass);
+        outPage.style.opacity = '';
+        outPage.style.transform = '';
+
+        inPage.classList.add('active', inClass);
+
+        setTimeout(() => {
+          inPage.classList.remove(inClass);
+          inPage.style.opacity = '';
+          inPage.style.transform = '';
+          animating = false;
+        }, 420);
+
+        current = next;
+        updateUI();
+      }, 380);
+    }
+
+    function next() { goTo(current + 1, 'forward'); }
+    function prev() { goTo(current - 1, 'back'); }
+
+    btnNext.addEventListener('click', next);
+    btnPrev.addEventListener('click', prev);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') next();
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'   || e.key === 'PageUp')   prev();
+    });
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? next() : prev();
+      }
+    }, { passive: true });
+
+    // Mouse wheel
+    let wheelLock = false;
+    document.addEventListener('wheel', e => {
+      if (wheelLock) return;
+      wheelLock = true;
+      e.deltaY > 0 ? next() : prev();
+      setTimeout(() => { wheelLock = false; }, 800);
+    }, { passive: true });
+
+    // Init
+    updateUI();
+  </script>
 </body>
 </html>
