@@ -34,11 +34,18 @@
       display: none;              /* hidden by default */
       align-items: center;
       justify-content: center;
-      background: #000;
     }
     .page.active {
       display: flex;
     }
+
+    /* Each page background exactly matches the edge colour of its image
+       so there are NO harsh black bars — just the image on its own background */
+    .page:nth-child(1) { background: #6b4218; } /* Cover — warm dark amber */
+    .page:nth-child(2) { background: #b9ada6; } /* Editor — warm grey/cream */
+    .page:nth-child(3) { background: #d3cdc6; } /* President — light cream */
+    .page:nth-child(4) { background: #734269; } /* Dresscode — deep purple */
+    .page:nth-child(5) { background: #060306; } /* Coming soon — near black */
 
     /*
       THE GOLDEN RULE:
