@@ -143,34 +143,36 @@ body {
    COVER PAGE
    ============================================= */
 .page--cover {
-  background: linear-gradient(
-    135deg,
-    #2A1500 0%,
-    #1A0A00 25%,
-    #0D0500 50%,
-    #1E0E00 75%,
-    #2A1500 100%
-  );
-  color: var(--gold-light);
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100vh;
+  padding: 0;
   overflow: hidden;
+  min-height: 100vh;
+  position: relative;
 }
 
-.cover-overlay {
+/* Full-bleed cover image */
+.cover-bg {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 40%, rgba(201,164,78,0.08) 0%, transparent 60%),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 60px,
-      rgba(201,164,78,0.015) 60px,
-      rgba(201,164,78,0.015) 61px
-    );
-  pointer-events: none;
+  z-index: 0;
+}
+
+.cover-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.cover-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.05) 0%,
+    rgba(0,0,0,0) 40%,
+    rgba(0,0,0,0.3) 100%
+  );
 }
 
 /* Ornamental corners */
@@ -178,224 +180,19 @@ body {
   position: absolute;
   width: 80px;
   height: 80px;
-  border-color: var(--gold);
+  border-color: rgba(201,164,78,0.7);
   border-style: solid;
-  opacity: 0.6;
+  z-index: 2;
 }
 .cover-corner--tl { top: 20px; left: 20px; border-width: 2px 0 0 2px; }
 .cover-corner--tr { top: 20px; right: 20px; border-width: 2px 2px 0 0; }
 .cover-corner--bl { bottom: 50px; left: 20px; border-width: 0 0 2px 2px; }
 .cover-corner--br { bottom: 50px; right: 20px; border-width: 0 2px 2px 0; }
 
-.cover-masthead {
-  text-align: center;
-  padding-top: 3rem;
-  position: relative;
-  z-index: 2;
-}
-
-.cover-the {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  letter-spacing: 0.5em;
-  color: rgba(201,164,78,0.7);
-  text-transform: uppercase;
-  margin-bottom: 0.25rem;
-}
-
-.cover-title {
-  font-family: var(--font-display);
-  font-size: clamp(4rem, 12vw, 9rem);
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  line-height: 0.9;
-  color: var(--gold);
-  text-shadow: 0 0 60px rgba(201,164,78,0.4), 0 2px 4px rgba(0,0,0,0.8);
-  position: relative;
-}
-
-.cover-title::after {
-  content: 'SIDEBAR';
-  position: absolute;
-  inset: 0;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(201,164,78,0.2);
-  transform: translate(3px, 3px);
-  z-index: -1;
-}
-
-.cover-subtitle {
-  font-family: var(--font-ui);
-  font-size: 0.7rem;
-  letter-spacing: 0.4em;
-  color: rgba(201,164,78,0.65);
-  margin-top: 0.5rem;
-}
-
-/* Honoree portrait area */
-.cover-honoree-block {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-  padding: 2rem 0;
-}
-
-.portrait-frame {
-  width: clamp(220px, 40vw, 380px);
-  aspect-ratio: 3/4;
-  border: 2px solid rgba(201,164,78,0.5);
-  position: relative;
-  overflow: hidden;
-  background: rgba(0,0,0,0.3);
-}
-
-.portrait-frame::before {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  border: 1px solid rgba(201,164,78,0.2);
-  pointer-events: none;
-  z-index: 10;
-}
-
-.portrait-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 1.5rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  color: var(--gold-light);
-  text-align: center;
-}
-
-/* When real image is provided */
-.portrait-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-}
-
-/* Cover bottom block */
-.cover-bottom {
-  text-align: center;
-  position: relative;
-  z-index: 2;
-  padding-bottom: 3rem;
-}
-
-.cover-honour-line {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 0.6rem;
-}
-
-.honour-dash { color: var(--gold); font-size: 1.2rem; }
-
-.honour-text {
-  font-family: var(--font-ui);
-  font-size: 0.6rem;
-  letter-spacing: 0.4em;
-  color: rgba(201,164,78,0.8);
-}
-
-.cover-honouree-name {
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 4vw, 2.4rem);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-}
-
-.cover-tagline {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-style: italic;
-  color: rgba(201,164,78,0.8);
-  margin-bottom: 0.3rem;
-}
-
-.cover-sub-tagline {
-  font-family: var(--font-ui);
-  font-size: 0.6rem;
-  letter-spacing: 0.3em;
-  color: rgba(201,164,78,0.5);
-  margin-bottom: 1.5rem;
-}
-
-.cover-toc-strip {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  font-family: var(--font-ui);
-  font-size: 0.55rem;
-  letter-spacing: 0.15em;
-  color: rgba(201,164,78,0.55);
-  border-top: 1px solid rgba(201,164,78,0.2);
-  border-bottom: 1px solid rgba(201,164,78,0.2);
-  padding: 0.6rem 1rem;
-  margin: 0 auto;
-  max-width: 500px;
-}
-
-.dot { opacity: 0.4; }
-
-.cover-credit {
-  position: absolute;
-  bottom: 12px;
-  left: 0; right: 0;
-  text-align: center;
-  font-family: var(--font-ui);
-  font-size: 0.5rem;
-  letter-spacing: 0.1em;
-  color: rgba(201,164,78,0.3);
-}
-
-.cover-sidebar-label {
-  position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%) rotate(-90deg);
-  font-family: var(--font-ui);
-  font-size: 0.45rem;
-  letter-spacing: 0.25em;
-  color: rgba(201,164,78,0.35);
-  white-space: nowrap;
-}
-
-/* Wax seal */
-.cover-seal {
-  position: absolute;
-  bottom: 70px;
-  right: 40px;
-  width: 50px;
-  height: 50px;
-  background: radial-gradient(circle, #8B1A2A, #5A0E1A);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.1);
-  border: 2px solid rgba(201,164,78,0.4);
-}
-
 /* Open magazine CTA */
 .cover-scroll-cta {
   position: absolute;
-  bottom: 70px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -405,17 +202,22 @@ body {
   font-family: var(--font-ui);
   font-size: 0.55rem;
   letter-spacing: 0.3em;
-  color: rgba(201,164,78,0.6);
+  color: rgba(255,255,255,0.8);
   text-decoration: none;
   transition: color 0.3s;
   animation: pulse-down 2s ease-in-out infinite;
+  z-index: 3;
+  background: rgba(0,0,0,0.35);
+  padding: 0.5rem 1.2rem;
+  border: 1px solid rgba(201,164,78,0.4);
+  border-radius: 2px;
 }
 
 .cover-scroll-cta:hover { color: var(--gold); }
 .scroll-arrow { font-size: 1rem; }
 
 @keyframes pulse-down {
-  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.8; }
   50% { transform: translateX(-50%) translateY(6px); opacity: 1; }
 }
 
@@ -566,27 +368,14 @@ body {
   background: var(--cream-dark);
 }
 
-.editor-photo-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 1rem;
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  color: var(--maroon);
-  text-align: center;
-  background: linear-gradient(to top, rgba(107,26,38,0.08) 0%, transparent 60%);
-}
-
-/* When real photo is provided */
+/* Real photos */
 .editor-photo-frame img,
 .president-photo-frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: top center;
+  display: block;
 }
 
 .editor-info {
@@ -717,20 +506,6 @@ body {
   margin-bottom: 0.6rem;
 }
 
-.president-photo-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 1rem;
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  color: var(--maroon);
-  text-align: center;
-  background: linear-gradient(to top, rgba(107,26,38,0.08) 0%, transparent 60%);
-}
-
 .president-name {
   font-family: var(--font-display);
   font-size: 1rem;
@@ -780,160 +555,28 @@ body {
    ITINERARY / DRESS CODE PAGE
    ============================================= */
 .page--itinerary {
-  background: linear-gradient(135deg, #3A1060 0%, #5B2080 30%, #6E2090 60%, #8B2060 100%);
-  align-items: flex-start;
+  background: #1a0030;
+  padding: 0;
+  overflow: hidden;
   min-height: 100vh;
+  align-items: stretch;
 }
 
-.itinerary-layout {
+.itinerary-full-image {
   width: 100%;
-  max-width: var(--page-max);
-  margin: 0 auto;
-  padding: 2.5rem;
-}
-
-.itinerary-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.itinerary-logos {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.logo-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-ui);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  border: 2px solid rgba(255,255,255,0.7);
-  color: white;
 }
 
-.logo-circle--1 { background: rgba(255,255,255,0.1); }
-.logo-circle--2 { background: rgba(255,255,255,0.1); }
-
-.itinerary-title-block {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.itinerary-title-main {
-  font-family: var(--font-ui);
-  font-size: clamp(1rem, 3vw, 1.5rem);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: white;
-}
-
-.itinerary-arrow {
-  color: white;
-  font-size: 1.3rem;
-}
-
-.itinerary-title-script {
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 4vw, 2rem);
-  font-style: italic;
-  color: white;
-  font-weight: 400;
-}
-
-/* Dress code cards grid */
-.dresscode-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  gap: 1rem;
-}
-
-.dc-card {
-  border-radius: 16px;
-  padding: 1.2rem;
-  position: relative;
-  overflow: hidden;
-  min-height: 130px;
-}
-
-.dc-card-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.itinerary-full-image img {
+  width: 100%;
   height: 100%;
-}
-
-.dc-card-text h3 {
-  font-family: var(--font-ui);
-  font-size: 1rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 0.3rem;
-}
-
-.dc-card-text p {
-  font-family: var(--font-ui);
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.9);
-}
-
-.dc-note {
-  font-size: 0.7rem !important;
-  opacity: 0.8;
-  margin-top: 0.3rem !important;
-}
-
-.dc-img-placeholder {
-  font-size: 2.5rem;
-  opacity: 0.3;
-}
-
-/* Card colours */
-.dc-card--sports  { background: var(--blue-card); }
-.dc-card--costume { background: var(--pink); }
-.dc-card--culture {
-  background: var(--orange-card);
-  grid-column: 1 / 2;
-}
-.dc-card--unrobed { background: var(--lilac-card); }
-.dc-card--dinner  { background: var(--pink); }
-
-/* When real images provided */
-.dc-card img {
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 50%;
-  object-fit: cover;
-  object-position: top center;
-  opacity: 0.6;
-}
-
-.itinerary-footer-bar {
-  margin-top: 1.5rem;
-}
-
-.itinerary-footer-rule {
-  height: 1px;
-  background: rgba(255,255,255,0.3);
-  margin-bottom: 0.8rem;
-}
-
-.itinerary-dates {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  color: rgba(255,255,255,0.7);
-  text-align: right;
+  object-fit: contain;
+  object-position: center;
+  max-height: 100vh;
+  display: block;
 }
 
 /* =============================================
