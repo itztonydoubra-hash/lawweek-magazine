@@ -31,7 +31,7 @@
     .page {
       position: absolute;
       inset: 0;
-      display: none;              /* hidden by default */
+      display: none;
       align-items: center;
       justify-content: center;
     }
@@ -39,17 +39,35 @@
       display: flex;
     }
 
-    /* Each page background exactly matches the edge colour of its image
-       so there are NO harsh black bars — just the image on its own background */
-    .page:nth-child(1) { background: #6b4218; } /* Cover — warm dark amber */
-    .page:nth-child(2) { background: #b9ada6; } /* Editor — warm grey/cream */
-    .page:nth-child(3) { background: #d3cdc6; } /* President — light cream */
-    .page:nth-child(4) { background: #734269; } /* Dresscode — deep purple */
-    .page:nth-child(5) { background: #978a7f; } /* Day 1 */
-    .page:nth-child(6) { background: #c39986; } /* Day 2 */
-    .page:nth-child(7) { background: #a8a497; } /* Day 3 */
-    .page:nth-child(8) { background: #a59a83; } /* Day 4 */
-    .page:nth-child(9) { background: #060306; } /* Coming soon — near black */
+    /* Blurred background — same image, stretched + blurred to fill side bars */
+    .page-blur {
+      position: absolute;
+      inset: -40px; /* slightly larger to cover blur edges */
+      background-size: cover;
+      background-position: center;
+      filter: blur(28px) brightness(0.55) saturate(1.3);
+      z-index: 0;
+    }
+
+    /* Actual image sits on top, fully intact, no cropping */
+    .page img {
+      position: relative;
+      z-index: 1;
+      max-width:  100vw;
+      max-height: calc(100vh - 50px);
+      width:  auto;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      /* subtle shadow to separate image from blurred bg */
+      box-shadow: 0 0 60px rgba(0,0,0,0.6);
+    }
+
+    /* Coming soon page — no image, just dark */
+    .page-placeholder {
+      background: #060306;
+    }
+    .page-placeholder .page-blur { display: none; }
 
     /*
       THE GOLDEN RULE:
@@ -205,34 +223,42 @@
 <main class="viewer">
 
   <div class="page active" data-label="Cover">
+    <div class="page-blur" style="background-image:url('assets/images/cover.jpg.jpeg')"></div>
     <img src="assets/images/cover.jpg.jpeg" alt="Cover" />
   </div>
 
   <div class="page" data-label="Editor's Note · Page 01">
+    <div class="page-blur" style="background-image:url('assets/images/editor.jpg.png')"></div>
     <img src="assets/images/editor.jpg.png" alt="Editor's Note" />
   </div>
 
   <div class="page" data-label="President's Opening Remarks · Page 02">
+    <div class="page-blur" style="background-image:url('assets/images/president.jpg.png')"></div>
     <img src="assets/images/president.jpg.png" alt="President's Remarks" />
   </div>
 
   <div class="page" data-label="Law Week Dress Code · 12th–17th October">
+    <div class="page-blur" style="background-image:url('assets/images/dresscode.jpg.jpeg')"></div>
     <img src="assets/images/dresscode.jpg.jpeg" alt="Dress Code" />
   </div>
 
   <div class="page" data-label="Day 1 · Law Week 2026">
+    <div class="page-blur" style="background-image:url('assets/images/day1.jpg.jpeg')"></div>
     <img src="assets/images/day1.jpg.jpeg" alt="Day 1 — Law Week 2026" />
   </div>
 
   <div class="page" data-label="Day 2 · Law Week 2026">
+    <div class="page-blur" style="background-image:url('assets/images/day2.jpg.jpeg')"></div>
     <img src="assets/images/day2.jpg.jpeg" alt="Day 2 — Law Week 2026" />
   </div>
 
   <div class="page" data-label="Day 3 · Law Week 2026">
+    <div class="page-blur" style="background-image:url('assets/images/day3.jpg.jpeg')"></div>
     <img src="assets/images/day3.jpg.jpeg" alt="Day 3 — Law Week 2026" />
   </div>
 
   <div class="page" data-label="Day 4 · Law Week 2026">
+    <div class="page-blur" style="background-image:url('assets/images/day4.jpg.jpeg')"></div>
     <img src="assets/images/day4.jpg.jpeg" alt="Day 4 — Law Week 2026" />
   </div>
 
