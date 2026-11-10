@@ -46,25 +46,30 @@
       z-index: 2;
     }
 
-    /* ── Full-bleed image — COVERS the whole page, no black bars ── */
+    /* ── Page image — always fully visible, no cropping ── */
     .page-img {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;        /* fills entire viewport */
-      object-position: center top; /* keeps the top (title/face) visible */
+      object-fit: contain;        /* full image always visible — no cropping */
+      object-position: center center;
       display: block;
     }
 
-    /* For the dress code (landscape-ish), center it instead */
-    .page-img.fit-contain {
-      object-fit: contain;
-      background: #0d0010;
-      object-position: center center;
-    }
+    /* Cover page: warm gold/amber background to match image edges */
+    #p0 { background: #6b3d08; }
 
-    /* Coming soon page has no image */
+    /* Editor page: cream/off-white background to match the page scan */
+    #p1 { background: #ede6d5; }
+
+    /* President page: same warm cream */
+    #p2 { background: #ede6d5; }
+
+    /* Dress code: deep purple to match the image background */
+    #p3 { background: #3a1060; }
+
+    /* Coming soon page */
     .page-coming {
       background: #060306;
       display: flex;
@@ -337,7 +342,7 @@
 
     <!-- PAGE 4 — DRESS CODE (square/landscape — use contain so nothing is cut) -->
     <div class="page" id="p3" data-label="Law Week Dress Code · 12th–17th October">
-      <img class="page-img fit-contain" src="assets/images/dresscode.jpg.jpeg"
+      <img class="page-img" src="assets/images/dresscode.jpg.jpeg"
            alt="Law Week 2026 Dress Code" />
     </div>
 
